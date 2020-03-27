@@ -4,5 +4,5 @@ Fermata Server
 
 개요
 ---------
-사용 언어 : TypeScript
-주요 담당자 : LISBON
+사용 언어 : TypeScript   
+주요 담당자 : LISBON, Mysiri29
