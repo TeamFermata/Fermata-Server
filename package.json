@@ -2,10 +2,10 @@
   "name": "fermata",
   "version": "1.0.0",
   "description": "",
-  "main": "./dest/app.js",
+  "main": "./dist/app.js",
   "scripts": {
-    "install": "npm install",
-    "start": "tsc && node ./dest/app.js",
+    "build-ts": "tsc",
+    "start": "tsc && node ./dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "TracetogetherKorea",
