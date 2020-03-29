@@ -5,9 +5,34 @@
 
 //Import Modules
 import express from "express"
-import dotEnv from "dotenv"
 import mysql from "mysql"
+import ejs from "ejs"
+import path from "path"
 
 //Initialize Settings
+const Database = mysql.createConnection({
+    host : process.env.DB_HOST,
+    user : process.env.DB_USER,
+    password : process.env.DB_PW,
+    port : 3306, // 기본 포트
+    database : process.env.DB_NAME
+})
+const App = express()
+App.use(express.static(path.join(__dirname, '../static')))
+App.use(express.json())
+App.use(express.urlencoded())
+App.set('views', path.join(__dirname, '../views')) // html 동적 파일 위치
+App.set('view engine', 'ejs')
+App.engine('html', ejs.renderFile)
+
+//Setting Express API Router
+import RT_introduce from "./routers/introduce"
+App.use('/introduce', RT_introduce)
+//App.use('/dashboard', require("./../src/"))
+//App.use('/api', require('./routers/api'))
 
 //Start Server
+App.listen(process.env.PORT || 80)
+
+//Export variables
+export {Database}
