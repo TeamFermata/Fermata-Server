@@ -20,16 +20,16 @@ const Database = mysql.createConnection({
 const App = express()
 App.use(express.static(path.join(__dirname, '../static')))
 App.use(express.json())
-App.use(express.urlencoded())
+App.use(express.urlencoded({extended:false}))
 App.set('views', path.join(__dirname, '../views')) // html 동적 파일 위치
 App.set('view engine', 'ejs')
 App.engine('html', ejs.renderFile)
 
 //Setting Express API Router
 import RT_introduce from "./routers/introduce"
+import API_USER from "./routers/api/user"
 App.use('/introduce', RT_introduce)
-//App.use('/dashboard', require("./../src/"))
-//App.use('/api', require('./routers/api'))
+App.use('/api/user', API_USER)
 
 //Start Server
 App.listen(process.env.PORT || 80)

@@ -24,15 +24,15 @@ exports.Database = Database;
 const App = express_1.default();
 App.use(express_1.default.static(path_1.default.join(__dirname, '../static')));
 App.use(express_1.default.json());
-App.use(express_1.default.urlencoded());
+App.use(express_1.default.urlencoded({ extended: false }));
 App.set('views', path_1.default.join(__dirname, '../views')); // html 동적 파일 위치
 App.set('view engine', 'ejs');
 App.engine('html', ejs_1.default.renderFile);
 //Setting Express API Router
 const introduce_1 = __importDefault(require("./routers/introduce"));
+const user_1 = __importDefault(require("./routers/api/user"));
 App.use('/introduce', introduce_1.default);
-//App.use('/dashboard', require("./../src/"))
-//App.use('/api', require('./routers/api'))
+App.use('/api/user', user_1.default);
 //Start Server
 App.listen(process.env.PORT || 80);
 //# sourceMappingURL=app.js.map
