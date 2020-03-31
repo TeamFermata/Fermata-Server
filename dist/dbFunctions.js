@@ -17,7 +17,7 @@ class dbFunctions {
             if (!err && rows.size == 0) { //오류가 없고 일치하는 ID가 없다면
                 var Salt = security_1.default.CreateSalt();
                 app_1.Database.query(`INSERT INTO authusers(ID, HashedPassword, Salt, SessionID, SignupDate)
-                VALUES(${app_1.Database.escape(ID)}, '${security_1.default.EncryptPassword(Password, Salt)}', '${Salt}', '', NOW())`, (err, rows, fields) => {
+                VALUES(${app_1.Database.escape(ID)}, '${security_1.default.EncryptPassword(Password, Salt)}', '${Salt}', '', NOW());`, (err, rows, fields) => {
                     if (!err) { //오류가 없다면
                         onFinish(TaskCode.SUCCESS_WORK); //작업 완료
                     }
