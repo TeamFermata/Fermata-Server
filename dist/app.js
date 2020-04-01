@@ -21,6 +21,7 @@ const Database = mysql_1.default.createConnection({
     database: process.env.DB_NAME
 });
 exports.Database = Database;
+Database.connect();
 const App = express_1.default();
 App.use(express_1.default.static(path_1.default.join(__dirname, '../static')));
 App.use(express_1.default.json());

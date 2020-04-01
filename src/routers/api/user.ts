@@ -1,6 +1,6 @@
 /*
     Fermata Server
-    API 처리 라우터
+    API 처리 라우터 / 사용자 관리
 */
 
 //Import Modules

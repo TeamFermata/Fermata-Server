@@ -12,8 +12,9 @@ class dbFunctions{
     //회원가입 쿼리
     static Signup(ID:string, Password:string, onFinish:(code:TaskCode) => any){
         Database.query(`SELECT * FROM authusers WHERE ID=${Database.escape(ID)};`, (err, rows, fields) => {
-            if(!err && rows.size == 0){ //오류가 없고 일치하는 ID가 없다면
+            if(!err && rows.length == 0){ //오류가 없고 일치하는 ID가 없다면
                 var Salt = Security.CreateSalt()
+                console.log(Security.EncryptPassword(Password, Salt))
                 Database.query(`INSERT INTO authusers(ID, HashedPassword, Salt, SessionID, SignupDate)
                 VALUES(${Database.escape(ID)}, '${Security.EncryptPassword(Password, Salt)}', '${Salt}', '', NOW());`, (err, rows, fields) => {
                     if(!err){ //오류가 없다면
@@ -29,7 +30,7 @@ class dbFunctions{
     //로그인 쿼리
     static Signin(ID:string, Password:string, onFinish:(code:TaskCode, newSessionID:string) => any){
         Database.query(`SELECT * FROM authusers WHERE ID=${Database.escape(ID)};`, (err, rows, fields) => {
-            if(!err && rows.size == 1){
+            if(!err && rows.length == 1){
                 var FoundUser = rows[0]
                 var LoginResult:boolean = (FoundUser.HashedPassword == Security.EncryptPassword(Password, FoundUser.Salt))
                 if(LoginResult){ //로그인 성공 시
@@ -37,14 +38,13 @@ class dbFunctions{
                     Database.query(`UPDATE authusers SET SessionID='${SessionID}' WHERE ID=${Database.escape(ID)};`, (err, rows, fields) => {
                         if(!err){ //새로운 세션 ID 발급 시
                             onFinish(TaskCode.SUCCESS_WORK, SessionID)
-                        }else{onFinish(TaskCode.ERR_SESSION_REGEN_FAILED, "")}
+                        }
                     })
-                    onFinish(TaskCode.SUCCESS_WORK, "새로운 세션ID")
                 }else if(!LoginResult){ //페스워드가 틀릴 경우(* 경고 : 페스워드 오류와 일치하는 계정 없음 오류는 보안을 위해 클라이언트에서 하나의 오류로 표시할 것!)
                     onFinish(TaskCode.ERR_SIGNIN_NOT_EQUAL_PW, "")
                 }
                 else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "")} //알 수 없는 오류
-            }else if(rows.size > 1){onFinish(TaskCode.ERR_SIGNIN_NOT_FOUND, "")} //일치하는 계정이 없음
+            }else if(rows.length > 1){onFinish(TaskCode.ERR_SIGNIN_NOT_FOUND, "")} //일치하는 계정이 없음
             else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "")} //알수없는 오류
         })
     }

@@ -17,6 +17,8 @@ const Database = mysql.createConnection({
     port : 3306, // 기본 포트
     database : process.env.DB_NAME
 })
+Database.connect()
+
 const App = express()
 App.use(express.static(path.join(__dirname, '../static')))
 App.use(express.json())
@@ -28,8 +30,10 @@ App.engine('html', ejs.renderFile)
 //Setting Express API Router
 import RT_introduce from "./routers/introduce"
 import API_USER from "./routers/api/user"
+import API_RECORD from "./routers/api/record"
 App.use('/introduce', RT_introduce)
 App.use('/api/user', API_USER)
+App.use('/api/record', API_RECORD)
 
 //Start Server
 App.listen(process.env.PORT || 80)

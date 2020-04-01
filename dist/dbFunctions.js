@@ -14,8 +14,9 @@ class dbFunctions {
     //회원가입 쿼리
     static Signup(ID, Password, onFinish) {
         app_1.Database.query(`SELECT * FROM authusers WHERE ID=${app_1.Database.escape(ID)};`, (err, rows, fields) => {
-            if (!err && rows.size == 0) { //오류가 없고 일치하는 ID가 없다면
+            if (!err && rows.length == 0) { //오류가 없고 일치하는 ID가 없다면
                 var Salt = security_1.default.CreateSalt();
+                console.log(security_1.default.EncryptPassword(Password, Salt));
                 app_1.Database.query(`INSERT INTO authusers(ID, HashedPassword, Salt, SessionID, SignupDate)
                 VALUES(${app_1.Database.escape(ID)}, '${security_1.default.EncryptPassword(Password, Salt)}', '${Salt}', '', NOW());`, (err, rows, fields) => {
                     if (!err) { //오류가 없다면
@@ -34,20 +35,17 @@ class dbFunctions {
     //로그인 쿼리
     static Signin(ID, Password, onFinish) {
         app_1.Database.query(`SELECT * FROM authusers WHERE ID=${app_1.Database.escape(ID)};`, (err, rows, fields) => {
-            if (!err && rows.size == 1) {
+            if (!err && rows.length == 1) {
                 var FoundUser = rows[0];
                 var LoginResult = (FoundUser.HashedPassword == security_1.default.EncryptPassword(Password, FoundUser.Salt));
                 if (LoginResult) { //로그인 성공 시
                     var SessionID = security_1.default.CreateSessionID();
+                    console.log(SessionID);
                     app_1.Database.query(`UPDATE authusers SET SessionID='${SessionID}' WHERE ID=${app_1.Database.escape(ID)};`, (err, rows, fields) => {
                         if (!err) { //새로운 세션 ID 발급 시
                             onFinish(TaskCode.SUCCESS_WORK, SessionID);
                         }
-                        else {
-                            onFinish(TaskCode.ERR_SESSION_REGEN_FAILED, "");
-                        }
                     });
-                    onFinish(TaskCode.SUCCESS_WORK, "새로운 세션ID");
                 }
                 else if (!LoginResult) { //페스워드가 틀릴 경우(* 경고 : 페스워드 오류와 일치하는 계정 없음 오류는 보안을 위해 클라이언트에서 하나의 오류로 표시할 것!)
                     onFinish(TaskCode.ERR_SIGNIN_NOT_EQUAL_PW, "");
@@ -56,7 +54,7 @@ class dbFunctions {
                     onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "");
                 } //알 수 없는 오류
             }
-            else if (rows.size > 1) {
+            else if (rows.length > 1) {
                 onFinish(TaskCode.ERR_SIGNIN_NOT_FOUND, "");
             } //일치하는 계정이 없음
             else {
