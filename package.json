@@ -18,6 +18,9 @@
     "crypto-js": "^4.0.0",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "greenlock-express": "^4.0.3",
+    "https": "^1.0.0",
     "mysql": "^2.18.1",
     "typescript": "^3.8.3"
   }

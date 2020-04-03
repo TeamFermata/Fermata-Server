@@ -8,8 +8,14 @@ import express from "express"
 import mysql from "mysql"
 import ejs from "ejs"
 import path from "path"
+import https from "https"
+import fs from "fs"
 
 //Initialize Settings
+const SSLsetting = {
+    key:fs.readFileSync(process.env.SSL_KEY!!),
+    cert:fs.readFileSync(process.env.SSL_CERT!!)
+}
 const Database = mysql.createConnection({
     host : process.env.DB_HOST,
     user : process.env.DB_USER,
@@ -36,7 +42,12 @@ App.use('/api/user', API_USER)
 App.use('/api/record', API_RECORD)
 
 //Start Server
-App.listen(process.env.PORT || 80)
+App.listen(process.env.PORT || 80) //HTTP
+try{
+    https.createServer(SSLsetting, App).listen(443)
+}catch(ex){
+    console.log("HTTPS Server Create Failed")
+}
 
 //Export variables
 export {Database}

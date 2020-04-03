@@ -24,4 +24,9 @@ router.post("/", (req, res) => {
 
 })
 
+//확진자 등록
+router.put("/infection", (req, res) => {
+    
+})
+
 export default router
