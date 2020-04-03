@@ -12,10 +12,6 @@ import https from "https"
 import fs from "fs"
 
 //Initialize Settings
-const SSLsetting = {
-    key:fs.readFileSync(process.env.SSL_KEY!!),
-    cert:fs.readFileSync(process.env.SSL_CERT!!)
-}
 const Database = mysql.createConnection({
     host : process.env.DB_HOST,
     user : process.env.DB_USER,
@@ -37,14 +33,21 @@ App.engine('html', ejs.renderFile)
 import RT_introduce from "./routers/introduce"
 import API_USER from "./routers/api/user"
 import API_RECORD from "./routers/api/record"
-App.use('/introduce', RT_introduce)
+App.use('/introduce', RT_introduce) //추후 삭제 예정
 App.use('/api/user', API_USER)
 App.use('/api/record', API_RECORD)
+App.get("/", (req, res) => { //안내화면
+    res.send("<h1>Fermata API Server</h1><br><p>DEVELOPED BY LISBON</p>")
+})
 
 //Start Server
 App.listen(process.env.PORT || 80) //HTTP
 try{
-    https.createServer(SSLsetting, App).listen(443)
+    const SSLsetting = {
+        key:fs.readFileSync(process.env.SSL_KEY!!),
+        cert:fs.readFileSync(process.env.SSL_CERT!!)
+    }
+    https.createServer(SSLsetting, App).listen(443) //HTTPS
 }catch(ex){
     console.log("HTTPS Server Create Failed")
 }

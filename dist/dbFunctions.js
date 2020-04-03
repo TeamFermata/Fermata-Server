@@ -40,7 +40,6 @@ class dbFunctions {
                 var LoginResult = (FoundUser.HashedPassword == security_1.default.EncryptPassword(Password, FoundUser.Salt));
                 if (LoginResult) { //로그인 성공 시
                     var SessionID = security_1.default.CreateSessionID();
-                    console.log(SessionID);
                     app_1.Database.query(`UPDATE authusers SET SessionID='${SessionID}' WHERE ID=${app_1.Database.escape(ID)};`, (err, rows, fields) => {
                         if (!err) { //새로운 세션 ID 발급 시
                             onFinish(TaskCode.SUCCESS_WORK, SessionID);
@@ -62,8 +61,71 @@ class dbFunctions {
             } //알수없는 오류
         });
     }
-    //기타 작업 시 세션인증 함수
+    //기타 작업 시 세션ID 인증 함수
     static AuthSession(SessionID, onFinish) {
+        app_1.Database.query(`SELECT * FROM authusers WHERE SessionID=${app_1.Database.escape(SessionID)};`, (err, rows, fields) => {
+            if (!err && rows.length == 1) { //DB 오류가 없다면
+                var CreatedSessionID = security_1.default.CreateSessionID();
+                app_1.Database.query(`UPDATE authusers SET SessionID='${CreatedSessionID}' WHERE SessionID=${app_1.Database.escape(CreatedSessionID)};`, (err, rows, fields) => {
+                    if (!err) { //새로운 세션 ID 발급 시
+                        onFinish(TaskCode.SUCCESS_WORK, CreatedSessionID);
+                    }
+                    else {
+                        onFinish(TaskCode.ERR_SESSION_REGEN_FAILED, "");
+                    }
+                });
+            }
+            else if (rows.length == 0 || rows.length > 1) {
+                onFinish(TaskCode.ERR_SESSION_AUTH_FAILED, "");
+            } //일치하는 계정을 찾을 수 없음
+            else {
+                onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "");
+            } //DB 오류가 있다면
+        });
+    }
+    //기록 추가
+    static InsertRecord(myStaticID, records, onFinish) {
+        var Items = [[]];
+        records.forEach((it) => {
+            Items.push([app_1.Database.escape(myStaticID), app_1.Database.escape(it), Date.now()]);
+        });
+        app_1.Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ?`, Items, (err, rows, fields) => {
+            if (!err) {
+                onFinish(TaskCode.SUCCESS_WORK); //INSERT 성공
+            }
+            else {
+                onFinish(TaskCode.ERR_DATABASE_UNKNOWN);
+            } //INSERT 중 오류 발생 시
+        });
+    }
+    //확진자 접촉여부 검색
+    static SearchRecord(myStaticID, onFinish) {
+        app_1.Database.query(`SELECT * FROM scanchains WHERE ScannerStaticID=${app_1.Database.escape(myStaticID)};`, (err, rows_my, fields) => {
+            if (!err) { //확진자들 리스트에서 유저가 스캔했던 UUID를 보유한 확진자들을 전부 불러옴
+                if (rows_my.length == 0) {
+                    onFinish(TaskCode.SUCCESS_WORK, [], []);
+                } //스캔 기록 자체가 없을 때
+                else {
+                    var myscanedUUIDlist = rows_my;
+                    app_1.Database.query(`SELECT * FROM infectedpersons WHERE PersonUUID IN (?)`, myscanedUUIDlist, (err, rows, fields) => {
+                        if (!err) {
+                            var contactedUUID = rows.map((it) => { return it.PersonUUID; });
+                            var contactedDate = rows_my.map((it) => { return it.ContactDayWithoutTime; });
+                            onFinish(TaskCode.SUCCESS_WORK, contactedUUID, contactedDate); //값 반환
+                        }
+                        else {
+                            onFinish(TaskCode.ERR_DATABASE_UNKNOWN, [], []);
+                        }
+                    });
+                }
+            }
+            else {
+                onFinish(TaskCode.ERR_DATABASE_UNKNOWN, [], []);
+            }
+        });
+    }
+    //확진자 추가
+    static InsertInfection(onFinish) {
     }
 }
 exports.dbFunctions = dbFunctions;

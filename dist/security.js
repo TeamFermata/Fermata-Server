@@ -23,7 +23,6 @@ class Security {
         const Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"; //SessionID source string
         var ResultSessionID = "";
         for (let index = 0; index < 16; index++) {
-            console.log(Chars[Math.round((new Date().valueOf() * Math.random())) % 63]);
             ResultSessionID += Chars[Math.round((new Date().valueOf() * Math.random())) % 63].toString();
         }
         return ResultSessionID;

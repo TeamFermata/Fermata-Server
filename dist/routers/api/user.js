@@ -1,7 +1,7 @@
 "use strict";
 /*
     Fermata Server
-    API 처리 라우터
+    API 처리 라우터 / 사용자 관리
 */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
