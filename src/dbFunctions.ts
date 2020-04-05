@@ -86,7 +86,7 @@ class dbFunctions{
             if(!err){ //확진자들 리스트에서 유저가 스캔했던 UUID를 보유한 확진자들을 전부 불러옴
                 if(rows_my.length == 0){onFinish(TaskCode.SUCCESS_WORK, [], [])} //스캔 기록 자체가 없을 때
                 else{
-                    var myscanedUUIDlist:Array<string> = rows_my
+                    var myscanedUUIDlist:Array<string> = rows_my.map((it:any) => {return it.ScanedDynamicUUID})
                     Database.query(`SELECT * FROM infectedpersons WHERE PersonUUID IN (?)`, myscanedUUIDlist, (err, rows, fields) => {
                         console.log(err)
                         if(!err){
