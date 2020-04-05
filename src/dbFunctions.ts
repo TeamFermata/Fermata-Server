@@ -56,7 +56,7 @@ class dbFunctions{
         Database.query(`SELECT * FROM authusers WHERE SessionID=${Database.escape(SessionID)};`, (err, rows, fields) => {
             if(!err && rows.length == 1){ //DB 오류가 없다면
                 var CreatedSessionID = Security.CreateSessionID()
-                Database.query(`UPDATE authusers SET SessionID='${CreatedSessionID}' WHERE SessionID=${Database.escape(CreatedSessionID)};`, (err, rows, fields) => {
+                Database.query(`UPDATE authusers SET SessionID='${CreatedSessionID}' WHERE SessionID=${Database.escape(SessionID)};`, (err, rows, fields) => {
                     if(!err){ //새로운 세션 ID 발급 시
                         onFinish(TaskCode.SUCCESS_WORK, CreatedSessionID)
                     }else{onFinish(TaskCode.ERR_SESSION_REGEN_FAILED, "")}
