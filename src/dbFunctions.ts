@@ -88,6 +88,7 @@ class dbFunctions{
                 else{
                     var myscanedUUIDlist:Array<string> = rows_my
                     Database.query(`SELECT * FROM infectedpersons WHERE PersonUUID IN (?)`, myscanedUUIDlist, (err, rows, fields) => {
+                        console.log(err)
                         if(!err){
                             var contactedUUID:Array<string> = rows.map((it:any) => {return it.PersonUUID})
                             var contactedDate:Array<string> = rows_my.map((it:any) => {return it.ContactDayWithoutTime})
