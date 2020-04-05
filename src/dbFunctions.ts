@@ -71,6 +71,7 @@ class dbFunctions{
             Items.push([Database.escape(myStaticID), Database.escape(it), Date.now()])
         })
         Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ?`, Items, (err, rows, fields) => {
+            console.log(err)
             if(!err){
                 onFinish(TaskCode.SUCCESS_WORK) //INSERT 성공
             }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN)} //INSERT 중 오류 발생 시
