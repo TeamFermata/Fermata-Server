@@ -66,7 +66,7 @@ class dbFunctions{
 
     //기록 추가
     static InsertRecord(myStaticID:string, records:Array<string>, onFinish:(code:TaskCode) => any){
-        var Items:Array<Array<any>> = []
+        var Items:Array<any> = []
         records.forEach((it) => { 
             Items.push([myStaticID, it, Date.now()])
         })
