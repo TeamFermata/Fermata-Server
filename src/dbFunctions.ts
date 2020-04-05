@@ -7,6 +7,7 @@
 import {Database} from "./app"
 import Security from "./security"
 import momentJS from "moment"
+import "moment-timezone"
 
 class dbFunctions{
 
