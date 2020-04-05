@@ -6,6 +6,7 @@
 //import modules
 import {Database} from "./app"
 import Security from "./security"
+import momentJS from "moment"
 
 class dbFunctions{
 
@@ -68,7 +69,7 @@ class dbFunctions{
     static InsertRecord(myStaticID:string, records:Array<string>, onFinish:(code:TaskCode) => any){
         var QueryValues:string = ""
         records.forEach((it) => { 
-            QueryValues = QueryValues + `(${Database.escape(myStaticID)}, ${Database.escape(it)}, '${`${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`}'),`
+            QueryValues = QueryValues + `(${Database.escape(myStaticID)}, ${Database.escape(it)}, '${momentJS(new Date()).format("YYYY-MM-DD")}'),`
         })
         QueryValues = QueryValues.slice(0, -1) + ";" //마지막 ,를 ;로 변경
         Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ${QueryValues}`, (err, rows, fields) => {
