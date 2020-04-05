@@ -66,11 +66,11 @@ class dbFunctions{
 
     //기록 추가
     static InsertRecord(myStaticID:string, records:Array<string>, onFinish:(code:TaskCode) => any){
-        var Items:Array<Array<any>> = [[]]
+        var Items:Array<Array<any>> = []
         records.forEach((it) => { 
-            Items.push([Database.escape(myStaticID), Database.escape(it), Date.now()])
+            Items.push([myStaticID, it, Date.now()])
         })
-        Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ?`, [Items], (err, rows, fields) => {
+        Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ?`, [], (err, rows, fields) => {
             console.log(err)
             if(!err){
                 onFinish(TaskCode.SUCCESS_WORK) //INSERT 성공
