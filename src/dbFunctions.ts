@@ -93,7 +93,7 @@ class dbFunctions{
                         if(!err){
                             var contactedUUID:Array<string> = rows.map((it:any) => {return it.PersonUUID})
                             var contactedDate:Array<string> = rows_my.map((it:any) => {return it.ContactDayWithoutTime})
-                            onFinish(TaskCode.SUCCESS_WORK, contactedUUID, contactedDate.map((it) => {return it.split("T")[0]})) //값 반환
+                            onFinish(TaskCode.SUCCESS_WORK, contactedUUID, contactedDate) //값 반환
                         }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN, [], [])}
                     })
                 }
