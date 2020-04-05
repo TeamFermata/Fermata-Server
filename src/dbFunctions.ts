@@ -69,12 +69,12 @@ class dbFunctions{
         var Items:Array<any> = []
         records.forEach((it) => { 
             Items.push({
-                ScannerStaticID:myStaticID,
-                ScanedDynamicUUID:it, 
-                ContactDayWithoutTime:Date.now()
+                "ScannerStaticID":myStaticID,
+                "ScanedDynamicUUID":it, 
+                "ContactDayWithoutTime":Date.now()
             })
         })
-        Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ?`, [Items], (err, rows, fields) => {
+        Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ?`, Items, (err, rows, fields) => {
             console.log(err)
             if(!err){
                 onFinish(TaskCode.SUCCESS_WORK) //INSERT 성공
