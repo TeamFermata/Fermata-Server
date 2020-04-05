@@ -69,7 +69,7 @@ class dbFunctions{
     static InsertRecord(myStaticID:string, records:Array<string>, onFinish:(code:TaskCode) => any){
         var QueryValues:string = ""
         records.forEach((it) => { 
-            QueryValues = QueryValues + `(${Database.escape(myStaticID)}, ${Database.escape(it)}, '${momentJS(new Date()).format("YYYY-MM-DD")}'),`
+            QueryValues = QueryValues + `(${Database.escape(myStaticID)}, ${Database.escape(it)}, '${momentJS(new Date()).tz("Asia/Seoul").format("YYYY-MM-DD")}'),` //KST TIMEZONE
         })
         QueryValues = QueryValues.slice(0, -1) + ";" //마지막 ,를 ;로 변경
         Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ${QueryValues}`, (err, rows, fields) => {
@@ -92,7 +92,7 @@ class dbFunctions{
                         if(!err){
                             var contactedUUID:Array<string> = rows.map((it:any) => {return it.PersonUUID})
                             var contactedDate:Array<string> = rows_my.map((it:any) => {return it.ContactDayWithoutTime})
-                            onFinish(TaskCode.SUCCESS_WORK, contactedUUID, contactedDate) //값 반환
+                            onFinish(TaskCode.SUCCESS_WORK, contactedUUID, contactedDate.map((it) => {return it.split("T")[0]})) //값 반환
                         }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN, [], [])}
                     })
                 }
