@@ -74,7 +74,7 @@ class dbFunctions{
                 ContactDayWithoutTime:Date.now()
             })
         })
-        Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ?`, Items, (err, rows, fields) => {
+        Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ?`, [Items], (err, rows, fields) => {
             console.log(err)
             if(!err){
                 onFinish(TaskCode.SUCCESS_WORK) //INSERT 성공
