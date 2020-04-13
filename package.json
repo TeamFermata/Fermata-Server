@@ -17,15 +17,19 @@
     "@types/moment": "^2.13.0",
     "@types/moment-timezone": "^0.5.13",
     "@types/mysql": "^2.15.9",
+    "@types/socket.io": "^2.1.4",
     "crypto-js": "^4.0.0",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
     "greenlock-express": "^4.0.3",
+    "http": "0.0.1-security",
     "https": "^1.0.0",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.28",
     "mysql": "^2.18.1",
+    "qrcode-terminal": "^0.12.0",
+    "socket.io": "^2.3.0",
     "typescript": "^3.8.3"
   }
 }

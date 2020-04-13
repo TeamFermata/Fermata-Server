@@ -10,6 +10,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //import modules
 const app_1 = require("./app");
 const security_1 = __importDefault(require("./security"));
+const moment_1 = __importDefault(require("moment"));
+require("moment-timezone");
 class dbFunctions {
     //회원가입 쿼리
     static Signup(ID, Password, onFinish) {
@@ -66,7 +68,7 @@ class dbFunctions {
         app_1.Database.query(`SELECT * FROM authusers WHERE SessionID=${app_1.Database.escape(SessionID)};`, (err, rows, fields) => {
             if (!err && rows.length == 1) { //DB 오류가 없다면
                 var CreatedSessionID = security_1.default.CreateSessionID();
-                app_1.Database.query(`UPDATE authusers SET SessionID='${CreatedSessionID}' WHERE SessionID=${app_1.Database.escape(CreatedSessionID)};`, (err, rows, fields) => {
+                app_1.Database.query(`UPDATE authusers SET SessionID='${CreatedSessionID}' WHERE SessionID=${app_1.Database.escape(SessionID)};`, (err, rows, fields) => {
                     if (!err) { //새로운 세션 ID 발급 시
                         onFinish(TaskCode.SUCCESS_WORK, CreatedSessionID);
                     }
@@ -85,11 +87,13 @@ class dbFunctions {
     }
     //기록 추가
     static InsertRecord(myStaticID, records, onFinish) {
-        var Items = [[]];
+        var QueryValues = "";
         records.forEach((it) => {
-            Items.push([app_1.Database.escape(myStaticID), app_1.Database.escape(it), Date.now()]);
+            QueryValues = QueryValues + `(${app_1.Database.escape(myStaticID)}, ${app_1.Database.escape(it)}, '${moment_1.default(new Date()).tz("Asia/Seoul").format("YYYY-MM-DD")}'),`; //KST TIMEZONE
         });
-        app_1.Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ?`, Items, (err, rows, fields) => {
+        QueryValues = QueryValues.slice(0, -1) + ";"; //마지막 ,를 ;로 변경
+        app_1.Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ${QueryValues}`, (err, rows, fields) => {
+            console.log(err);
             if (!err) {
                 onFinish(TaskCode.SUCCESS_WORK); //INSERT 성공
             }
@@ -106,8 +110,9 @@ class dbFunctions {
                     onFinish(TaskCode.SUCCESS_WORK, [], []);
                 } //스캔 기록 자체가 없을 때
                 else {
-                    var myscanedUUIDlist = rows_my;
+                    var myscanedUUIDlist = rows_my.map((it) => { return it.ScanedDynamicUUID; });
                     app_1.Database.query(`SELECT * FROM infectedpersons WHERE PersonUUID IN (?)`, myscanedUUIDlist, (err, rows, fields) => {
+                        console.log(err);
                         if (!err) {
                             var contactedUUID = rows.map((it) => { return it.PersonUUID; });
                             var contactedDate = rows_my.map((it) => { return it.ContactDayWithoutTime; });

@@ -10,6 +10,7 @@ import ejs from "ejs"
 import path from "path"
 import https from "https"
 import fs from "fs"
+import {watchu, watchuUser, watchuPermission} from "./watchu"
 
 //Initialize Settings
 const Database = mysql.createConnection({
@@ -39,6 +40,12 @@ App.use('/api/record', API_RECORD)
 App.get("/", (req, res) => { //안내화면
     res.send("<h1>Fermata API Server</h1><br><p>DEVELOPED BY LISBON</p>")
 })
+
+//watchu 활성화
+const watchuApp = new watchu("localhost", 9503, process, watchu.getUsersFromObj([ //사용자 설정파일(추후 배포시 환경변수로 불러올 것)
+    {id:"admin", pw:"testpw", permissions:[watchuPermission.PERMISSION_ADMIN]} //ADMIN 테스트
+]))
+watchuApp.start()
 
 //Start Server
 App.listen(process.env.PORT || 80) //HTTP

@@ -54,7 +54,16 @@ router.post("/", (req, res) => {
 router.put("/infection", (req, res) => {
     dbFunctions.AuthSession(req.body.sessionID != null ? req.body.sessionID : "", (code:TaskCode, newSessionID:String) => {
         if(code == TaskCode.SUCCESS_WORK){ //인증 성공 시
-
+            dbFunctions.InsertInfection(req.body.record, req.body.email, req.body.numstr, req.body.pnumstr, (Code:TaskCode) => { //확진자 등록
+                switch(Code){
+                    case TaskCode.SUCCESS_WORK :
+                        res.send({"code":"success", "newSessionID":newSessionID})
+                        break
+                    default :
+                        res.send({"code":"fail_unknown"})
+                        break
+                }
+            })
         }else if(code == TaskCode.ERR_SESSION_AUTH_FAILED){res.send({"code":"fail_auth"})}
         else if(code == TaskCode.ERR_SESSION_REGEN_FAILED){res.send({"code":"fail_regen"})}
         else{res.send({"code":"fail_unknown"})}

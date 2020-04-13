@@ -14,6 +14,7 @@ const ejs_1 = __importDefault(require("ejs"));
 const path_1 = __importDefault(require("path"));
 const https_1 = __importDefault(require("https"));
 const fs_1 = __importDefault(require("fs"));
+const watchu_1 = require("./watchu");
 //Initialize Settings
 const Database = mysql_1.default.createConnection({
     host: process.env.DB_HOST,
@@ -41,6 +42,11 @@ App.use('/api/record', record_1.default);
 App.get("/", (req, res) => {
     res.send("<h1>Fermata API Server</h1><br><p>DEVELOPED BY LISBON</p>");
 });
+//watchu 활성화
+const watchuApp = new watchu_1.watchu("localhost", 9503, process, watchu_1.watchu.getUsersFromObj([
+    { id: "admin", pw: "testpw", permissions: [watchu_1.watchuPermission.PERMISSION_ADMIN] } //ADMIN 테스트
+]));
+watchuApp.start();
 //Start Server
 App.listen(process.env.PORT || 80); //HTTP
 try {

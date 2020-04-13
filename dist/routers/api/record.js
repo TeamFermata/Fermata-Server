@@ -14,8 +14,10 @@ const router = express_1.default.Router();
 //접촉 기록 추가
 router.put("/", (req, res) => {
     dbFunctions_1.dbFunctions.AuthSession(req.body.sessionID != null ? req.body.sessionID : "", (code, newSessionID) => {
-        if (code == dbFunctions_1.TaskCode.SUCCESS_WORK && req.body.myID != null && req.body.record != null) { //인증을 성공하고 내용이 있다면
+        if (code == dbFunctions_1.TaskCode.SUCCESS_WORK) { //인증을 성공하고 내용이 있다면
+            console.log("BEFORE INSERT RECORD : " + code + "");
             dbFunctions_1.dbFunctions.InsertRecord(req.body.myID, req.body.record, (code) => {
+                console.log("INSERT RECORD : " + code + "");
                 switch (code) {
                     case dbFunctions_1.TaskCode.SUCCESS_WORK: //등록 성공 시
                         res.send({ "code": "success", "newSessionID": newSessionID });
