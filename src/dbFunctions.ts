@@ -105,7 +105,7 @@ class dbFunctions{
     static InsertInfection(Records:Array<string>, GovermentEmail:string, GovermentID:string, PhoneLastNumber:string, onFinish:(code:TaskCode) => any){
         var QueryValues:string = ""
         Records.forEach((it) => { 
-            QueryValues = QueryValues + `(확진자가 여태껏 발신해왔던 UUID, 정부에서 발급한 확진자 ID, 확진자 폰 뒷자리, 담당자 이메일),`
+            QueryValues = QueryValues + `(${Database.escape(it)}, ${Database.escape(GovermentID)}, ${Database.escape(PhoneLastNumber)}, ${Database.escape(GovermentEmail)}),`
         })
         Database.query(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES ${QueryValues}`, (err, rows, fields) => {
             if(!err){

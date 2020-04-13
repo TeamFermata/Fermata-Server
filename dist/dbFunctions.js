@@ -130,7 +130,19 @@ class dbFunctions {
         });
     }
     //확진자 추가
-    static InsertInfection(onFinish) {
+    static InsertInfection(Records, GovermentEmail, GovermentID, PhoneLastNumber, onFinish) {
+        var QueryValues = "";
+        Records.forEach((it) => {
+            QueryValues = QueryValues + `(${app_1.Database.escape(it)}, ${app_1.Database.escape(GovermentID)}, ${app_1.Database.escape(PhoneLastNumber)}, ${app_1.Database.escape(GovermentEmail)}),`;
+        });
+        app_1.Database.query(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES ${QueryValues}`, (err, rows, fields) => {
+            if (!err) {
+                onFinish(TaskCode.SUCCESS_WORK);
+            }
+            else {
+                onFinish(TaskCode.ERR_DATABASE_UNKNOWN);
+            }
+        });
     }
 }
 exports.dbFunctions = dbFunctions;

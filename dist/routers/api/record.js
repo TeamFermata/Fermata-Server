@@ -69,6 +69,16 @@ router.post("/", (req, res) => {
 router.put("/infection", (req, res) => {
     dbFunctions_1.dbFunctions.AuthSession(req.body.sessionID != null ? req.body.sessionID : "", (code, newSessionID) => {
         if (code == dbFunctions_1.TaskCode.SUCCESS_WORK) { //인증 성공 시
+            dbFunctions_1.dbFunctions.InsertInfection(req.body.record, req.body.email, req.body.numstr, req.body.pnumstr, (Code) => {
+                switch (Code) {
+                    case dbFunctions_1.TaskCode.SUCCESS_WORK:
+                        res.send({ "code": "success", "newSessionID": newSessionID });
+                        break;
+                    default:
+                        res.send({ "code": "fail_unknown" });
+                        break;
+                }
+            });
         }
         else if (code == dbFunctions_1.TaskCode.ERR_SESSION_AUTH_FAILED) {
             res.send({ "code": "fail_auth" });
