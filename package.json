@@ -5,6 +5,7 @@
   "main": "./dist/app.js",
   "scripts": {
     "build-ts": "tsc",
+    "build-fn": "tsc --project tsconfig.fn.json",
     "start": "tsc && node ./dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
