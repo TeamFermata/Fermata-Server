@@ -131,11 +131,9 @@ class dbFunctions {
     }
     //확진자 추가
     static InsertInfection(Records, GovermentEmail, GovermentID, PhoneLastNumber, onFinish) {
-        var QueryValues = "";
-        Records.forEach((it) => {
-            QueryValues = QueryValues + `(${app_1.Database.escape(it)}, ${app_1.Database.escape(GovermentID)}, ${app_1.Database.escape(PhoneLastNumber)}, ${app_1.Database.escape(GovermentEmail)}),`;
-        });
-        app_1.Database.query(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES ${QueryValues}`, (err, rows, fields) => {
+        var QueryValues = Records.map((it) => `(${app_1.Database.escape(it)}, ${app_1.Database.escape(GovermentID)}, ${app_1.Database.escape(PhoneLastNumber)}, ${app_1.Database.escape(GovermentEmail)})`);
+        console.log(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES ${QueryValues.join(",")}`);
+        app_1.Database.query(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES ${QueryValues.join(",")}`, (err, rows, fields) => {
             if (!err) {
                 onFinish(TaskCode.SUCCESS_WORK);
             }

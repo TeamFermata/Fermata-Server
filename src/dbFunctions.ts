@@ -103,11 +103,12 @@ class dbFunctions{
 
     //확진자 추가
     static InsertInfection(Records:Array<string>, GovermentEmail:string, GovermentID:string, PhoneLastNumber:string, onFinish:(code:TaskCode) => any){
-        var QueryValues:string = ""
-        Records.forEach((it) => { 
-            QueryValues = QueryValues + `(${Database.escape(it)}, ${Database.escape(GovermentID)}, ${Database.escape(PhoneLastNumber)}, ${Database.escape(GovermentEmail)}),`
-        })
-        Database.query(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES ${QueryValues}`, (err, rows, fields) => {
+        var QueryValues:string[] =  Records.map((it) =>  
+           `(${Database.escape(it)}, ${Database.escape(GovermentID)}, ${Database.escape(PhoneLastNumber)}, ${Database.escape(GovermentEmail)})`
+        );
+       
+        console.log(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES ${QueryValues.join(",")}`);
+        Database.query(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES ${QueryValues.join(",")}`, (err, rows, fields) => {
             if(!err){
                 onFinish(TaskCode.SUCCESS_WORK)
             }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN)}
