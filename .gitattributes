@@ -1,4 +1,4 @@
-dist/* linguist-vendored
-views/* linguist-vendored
-static/* linguist-vendored
-node_modules/* linguist-vendored
+Fermata/dist/* linguist-vendored
+Fermata/views/* linguist-vendored
+Fermata/static/* linguist-vendored
+Fermata/node_modules/* linguist-vendored
