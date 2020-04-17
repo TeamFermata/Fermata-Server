@@ -4,6 +4,6 @@ Fermata Server
 
 개요
 ---------
-사용 언어 : TypeScript   
+사용 언어 : TypeScript, JavaScript(Cloud Function)   
 사용 라이브러리 : Express, mysql, crypto-ts   
-개발자 : CRUSHU
+개발자 : CRUSHU, cyflux
