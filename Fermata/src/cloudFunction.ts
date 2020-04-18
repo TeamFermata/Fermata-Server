@@ -34,6 +34,7 @@ import API_RECORD from "./routers/api/record"
 
 App.use('/api/user', API_USER)
 App.use('/api/record', API_RECORD)
+var CloudSetting:any = null
 
 function main(CloudArgs:any){
     const method = CloudArgs.method;
@@ -42,7 +43,7 @@ function main(CloudArgs:any){
     delete CloudArgs.__ow_headers;
 
 
-       
+    CloudSetting = CloudArgs.API   
     if(Database==null) {
         Database= mysql.createConnection(CloudArgs.db)
         Database.connect();
@@ -106,4 +107,4 @@ function main(CloudArgs:any){
 }
 
 //Export variables
-export {Database,main}
+export {Database, main, CloudSetting}
