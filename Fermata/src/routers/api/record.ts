@@ -10,7 +10,7 @@ import ejs from "ejs"
 import path from "path"
 import request from "request"
 import Security from "../../security"
-import {CloudSetting} from "../../cloudFunction"
+import {CloudSetting} from "../../app"
 const router = express.Router()
 
 //접촉 기록 추가
