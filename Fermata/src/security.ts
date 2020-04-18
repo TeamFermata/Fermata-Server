@@ -13,6 +13,12 @@ class Security{
         return CryptoJS.SHA256(`${Password}${Salt}`).toString(CryptoJS.enc.Base64)
     }
 
+    //네이버 클라우드 플랫폼 메일링 RESTAPI 인증
+    static makeSignatureV2(timestamp:number, accessKey:string, secretKey:string):string{
+        var Body = `POST api/v1/mails\n${timestamp}\n${accessKey}`
+        return CryptoJS.HmacSHA256(Body, secretKey).toString(CryptoJS.enc.Base64)
+    }
+
     //솔트값 생성
     static CreateSalt():string{
         return `${Math.round((new Date().valueOf() * Math.random()))}`
