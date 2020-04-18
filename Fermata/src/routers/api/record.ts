@@ -10,7 +10,7 @@ import ejs from "ejs"
 import path from "path"
 import request from "request"
 import Security from "../../security"
-import {CloudSetting} from "../../app"
+
 const router = express.Router()
 
 //접촉 기록 추가
@@ -63,7 +63,8 @@ router.put("/infection", (req, res) => {
                 switch(Code){
                     case TaskCode.SUCCESS_WORK :
                         //인증 이메일 전송
-                        const time = Date.now()
+                        const time = Date.now();
+                        var CloudSetting=req.body.API;
                         ejs.renderFile(path.join(__dirname, "/views/AuthMail.ejs"),
                         {PersonGovermentID:req.body.numstr, lastPhoneNumber:req.body.pnumstr, AuthIDWithAPIaddr:`https://api.fermata.com/api/infection?AUTHID=${AuthID}`},
                         {}, (err, html:string) => {
