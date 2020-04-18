@@ -109,7 +109,9 @@ router.put("/infection", (req, res) => {
 
 //확진자 인증(for email)
 router.get("/infection", (req, res) => {
-
+    dbFunctions.AuthInfection(req.params.AUTHID, (code:TaskCode) => {
+        
+    })
 })
 
 export default router
