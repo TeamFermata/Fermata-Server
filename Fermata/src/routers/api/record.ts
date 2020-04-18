@@ -10,7 +10,7 @@ import ejs from "ejs"
 import path from "path"
 import request from "request"
 import Security from "../../security"
-
+import {CloudSetting} from "../../app"
 const router = express.Router()
 
 //접촉 기록 추가
@@ -60,7 +60,6 @@ router.put("/infection", (req, res) => {
     dbFunctions.AuthSession(req.body.sessionID != null ? req.body.sessionID : "", (code:TaskCode, newSessionID:String) => {
         if(code == TaskCode.SUCCESS_WORK){ //인증 성공 시
             dbFunctions.InsertInfection(req.body.record, req.body.email, req.body.numstr, req.body.pnumstr, (Code:TaskCode, AuthID:string) => { //확진자 등록
-               var         CloudSetting= req.body.API;
                 switch(Code){
                     case TaskCode.SUCCESS_WORK :
                         //인증 이메일 전송
@@ -110,7 +109,9 @@ router.put("/infection", (req, res) => {
 
 //확진자 인증(for email)
 router.get("/infection", (req, res) => {
-
+    dbFunctions.AuthInfection(req.params.AUTHID, (code:TaskCode) => {
+        
+    })
 })
 
 export default router
