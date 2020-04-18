@@ -7,7 +7,9 @@
 import {Database} from "./app"
 import Security from "./security"
 import momentJS from "moment"
+import path from "path"
 import "moment-timezone"
+import ejs from "ejs"
 
 class dbFunctions{
 
@@ -83,12 +85,12 @@ class dbFunctions{
     //확진자 접촉여부 검색
     static SearchRecord(myStaticID:string, onFinish:(code:TaskCode, found_uuid:Array<string>, found_date:Array<string>) => any){
         Database.query(`SELECT * FROM scanchains WHERE ScannerStaticID=${Database.escape(myStaticID)} AND ContactDayWithoutTime > (NOW() - INTERVAL 1 MONTH);`, (err, rows_my, fields) => {
-            if(!err){ //확진자들 리스트에서 유저가 스캔했던 UUID를 보유한 확진자들을 전부 불러옴(단 한달 전부터 지금까지 있었던 기록만 가져옴)
+            if(!err){ //확진자들 리스트에서 유저가 스캔했던 접촉기록들을 전부 불러옴(단 한달 전부터 지금까지 있었던 기록만 가져옴)
                 if(rows_my.length == 0){onFinish(TaskCode.SUCCESS_WORK, [], [])} //스캔 기록 자체가 없을 때
                 else{
                     var myscanedUUIDlist:Array<string> = rows_my.map((it:any) => {return it.ScanedDynamicUUID})
-                    Database.query(`SELECT * FROM infectedpersons WHERE PersonUUID IN (?)`, myscanedUUIDlist, (err, rows, fields) => {
-                        if(!err){
+                    Database.query(`SELECT * FROM infectedpersons WHERE Authed=1 AND PersonUUID IN (?)`, myscanedUUIDlist, (err, rows, fields) => {
+                        if(!err){ //인증된 확진자들 중에서 만난 확진자가 있다면
                             var contactedUUID:Array<string> = rows.map((it:any) => {return it.PersonUUID})
                             var contactedDate:Array<string> = rows_my.map((it:any) => {return it.ContactDayWithoutTime})
                             onFinish(TaskCode.SUCCESS_WORK, contactedUUID, contactedDate) //값 반환
@@ -100,13 +102,28 @@ class dbFunctions{
     }
 
     //확진자 추가
-    static InsertInfection(Records:Array<string>, GovermentEmail:string, GovermentID:string, PhoneLastNumber:string, onFinish:(code:TaskCode) => any){
+    static InsertInfection(Records:Array<string>, GovermentEmail:string, GovermentID:string, PhoneLastNumber:string, onFinish:(code:TaskCode, AuthID:string) => any){
         var QueryValues:string[] = Records.map((it) => 
             `(${Database.escape(it)}, ${Database.escape(GovermentID)}, ${Database.escape(PhoneLastNumber)}, ${Database.escape(GovermentEmail)})`
         )
-        Database.query(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES ${QueryValues}`, (err, rows, fields) => {
+        const EmailAuthID = Security.CreateSessionID()
+        Database.query(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES ${QueryValues.join(",")};
+        INSERT INTO infectedpersons(EmailAuthID, GovermentID) VALUES(${EmailAuthID}, ${Database.escape(GovermentID)})`, (err, rows, fields) => { //확진자 등록 및 이메일 등록
             if(!err){
-                onFinish(TaskCode.SUCCESS_WORK)
+                onFinish(TaskCode.SUCCESS_WORK, EmailAuthID)
+            }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "")}
+        })
+    }
+
+    //확진자 인증
+    static AuthInfection(AuthID:string, onFinish:(code:TaskCode) => any){
+        Database.query(`SELECT * FROM authinfect WHERE EmailAuthID=${Database.escape(AuthID)}`, (err, rows, fields) => { //인증 ID로 확진자들 ID 가져오기
+            if(!err && rows.length == 1){ //오류가 없다면
+                Database.query(`UPDATE infectedpersons SET Authed=1 WHERE GovermentID=${rows[0].GovermentID}`, (err, rows, fields) => { //확진자들 ID와 일치하는 확진자는 모두 인증 처리
+                    if(!err){
+                        onFinish(TaskCode.SUCCESS_WORK)
+                    }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN)}
+                })
             }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN)}
         })
     }
