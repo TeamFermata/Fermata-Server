@@ -107,8 +107,8 @@ class dbFunctions{
             `(${Database.escape(it)}, ${Database.escape(GovermentID)}, ${Database.escape(PhoneLastNumber)}, ${Database.escape(GovermentEmail)})`
         )
         const EmailAuthID = Security.CreateSessionID()
-        Database.query(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES (${QueryValues.join(",")});
-        INSERT INTO infectedpersons(EmailAuthID, GovermentID) VALUES('${EmailAuthID}', ${Database.escape(GovermentID)})`, (err, rows, fields) => { //확진자 등록 및 이메일 등록
+        Database.query(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES ${QueryValues.join(",")};
+        INSERT INTO infectedpersons(EmailAuthID, GovermentID) VALUES(${EmailAuthID}, ${Database.escape(GovermentID)})`, (err, rows, fields) => { //확진자 등록 및 이메일 등록
             if(!err){
                 onFinish(TaskCode.SUCCESS_WORK, EmailAuthID)
             }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "")}
@@ -119,7 +119,7 @@ class dbFunctions{
     static AuthInfection(AuthID:string, onFinish:(code:TaskCode) => any){
         Database.query(`SELECT * FROM authinfect WHERE EmailAuthID=${Database.escape(AuthID)}`, (err, rows, fields) => { //인증 ID로 확진자들 ID 가져오기
             if(!err && rows.length == 1){ //오류가 없다면
-                Database.query(`UPDATE infectedpersons SET Authed=1 WHERE GovermentID='${rows[0].GovermentID}'`, (err, rows, fields) => { //확진자들 ID와 일치하는 확진자는 모두 인증 처리
+                Database.query(`UPDATE infectedpersons SET Authed=1 WHERE GovermentID=${rows[0].GovermentID}`, (err, rows, fields) => { //확진자들 ID와 일치하는 확진자는 모두 인증 처리
                     if(!err){
                         onFinish(TaskCode.SUCCESS_WORK)
                     }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN)}

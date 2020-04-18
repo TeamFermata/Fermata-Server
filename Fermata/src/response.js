@@ -112,13 +112,17 @@ module.exports = class ServerlessResponse extends http.ServerResponse {
       }
 
       addData(data);
+     
 
       if (typeof callback === 'function') {
         callback();
       }
     };
-
-    this.status=null;
+  
+    this.status=function(code){
+      this.statusCode=code;
+      return this;
+    };
 this.sendStatus=null;
 this.links=null;
 this.send=send;

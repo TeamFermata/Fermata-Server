@@ -16,8 +16,8 @@ import ejs from "ejs"
 var Database: mysql.Connection ;
 
 //naver cloud function 자체 라이브러리 파일
-import request from "./request1"
-import response from "./response1"
+import request from "./request"
+import response from "./response"
 
 const App = express()
 App.use(express.static(path.join(__dirname, '../static')))
@@ -34,7 +34,7 @@ import API_RECORD from "./routers/api/record"
 
 App.use('/api/user', API_USER)
 App.use('/api/record', API_RECORD)
-var CloudSetting:any = null
+
 
 function main(CloudArgs:any){
     const method = CloudArgs.method;
@@ -42,13 +42,14 @@ function main(CloudArgs:any){
     const headers =CloudArgs.__ow_headers;
     delete CloudArgs.__ow_headers;
 
-
-    CloudSetting = CloudArgs.API   
+    console.log(CloudArgs);
+ 
     if(Database==null) {
         Database= mysql.createConnection(CloudArgs.db)
         Database.connect();
         }
      
+
         
     return new Promise((s,j)=>{
         var req ;
@@ -59,6 +60,7 @@ function main(CloudArgs:any){
                 method:method,
                 headers:headers,
                 body:CloudArgs,
+                
                 remoteAddress:remoteAddress,
                 url: "/",
               });
@@ -66,7 +68,12 @@ function main(CloudArgs:any){
         
             API_USER(  req ,  new response( (result: any)=>{
 
-                s(result);
+                if(true||result.code=="success"){
+                    s(result);
+                } else {
+                    j(result.code)
+                }
+                
 
             } )
             , ()=>{} )
@@ -78,11 +85,17 @@ function main(CloudArgs:any){
                 method: method,
                 headers: headers,
                 body: CloudArgs,
+        
                 remoteAddress: remoteAddress,
                 url: "/",
             });
             API_RECORD(req, new response((result:any) => {
-                s(result);
+                if(true||result.code=="success"){
+                    s(result);
+                } else {
+                    j(result.code)
+                }
+                
                 
             }), () => { });
         } else if(CloudArgs.path=="records/infection"){
@@ -91,11 +104,17 @@ function main(CloudArgs:any){
                 method: method,
                 headers: headers,
                 body: CloudArgs,
+            
                 remoteAddress: remoteAddress,
                 url: "/infection",
             });
             API_RECORD(req, new response((result:any) => {
-                s(result);
+                if(true||result.code=="success"){
+                    s(result);
+                } else {
+                    j(result.code)
+                }
+                
             }), () => { });
             
         }
@@ -107,4 +126,4 @@ function main(CloudArgs:any){
 }
 
 //Export variables
-export {Database, main, CloudSetting}
+export {Database, main}
