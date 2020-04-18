@@ -30,10 +30,8 @@ App.set('view engine', 'ejs')
 App.engine('html', ejs.renderFile)
 
 //Setting Express API Router
-import RT_introduce from "./routers/introduce"
 import API_USER from "./routers/api/user"
 import API_RECORD from "./routers/api/record"
-App.use('/introduce', RT_introduce) //추후 삭제 예정
 App.use('/api/user', API_USER)
 App.use('/api/record', API_RECORD)
 App.get("/", (req, res) => { //안내화면
