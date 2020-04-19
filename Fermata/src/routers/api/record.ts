@@ -60,14 +60,17 @@ router.put("/infection", (req, res) => {
     dbFunctions.AuthSession(req.body.sessionID != null ? req.body.sessionID : "", (code:TaskCode, newSessionID:String) => {
         if(code == TaskCode.SUCCESS_WORK){ //인증 성공 시
             dbFunctions.InsertInfection(req.body.record, req.body.email, req.body.numstr, req.body.pnumstr, (Code:TaskCode, AuthID:string) => { //확진자 등록
+                console.log("코드 : " + Code)
                 switch(Code){
                     case TaskCode.SUCCESS_WORK :
                         //인증 이메일 전송
+                        console.log("인증 성공")
                         const time = Date.now();
                         var CloudSetting=req.body.API;
-                        ejs.renderFile(path.join(__dirname, "/views/AuthMail.ejs"),
+                        ejs.renderFile(path.join(__dirname, "../../../views/AuthMail.ejs"),
                         {PersonGovermentID:req.body.numstr, lastPhoneNumber:req.body.pnumstr, AuthIDWithAPIaddr:`https://api.fermata.com/api/infection?AUTHID=${AuthID}`},
                         {}, (err, html:string) => {
+                            console.log("렌더링 오류" + err) //ejs 렌더링 오류 디버깅
                             if(!err){
                                 const MailOptions = { //메일 전송
                                     uri: "https://mail.apigw.ntruss.com/api/v1/mails",
@@ -90,12 +93,17 @@ router.put("/infection", (req, res) => {
                                     json:true
                                 }
                                 request.post(MailOptions, (err, httpResponse, body) => {
+                                    console.log(httpResponse.statusCode)
+                                    console.log(httpResponse.body)
                                     if(!err){res.send({"code":"success", "newSessionID":newSessionID})}else{
-                                        res.send({"code":"fail_unknown"})
+                                        res.send({"code":"fail_unknown_email"})
                                     }
                                 })
-                            }else{res.send({"code":"fail_unknown"})}
+                            }else{res.send({"code":"fail_rendermail"})}
                         })
+                        break
+                    case TaskCode.ERR_DATABASE_UNKNOWN :
+                        res.send({"code":"fail_sql"})
                         break
                     default :
                         res.send({"code":"fail_unknown"})

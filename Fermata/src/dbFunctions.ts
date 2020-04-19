@@ -107,10 +107,17 @@ class dbFunctions{
             `(${Database.escape(it)}, ${Database.escape(GovermentID)}, ${Database.escape(PhoneLastNumber)}, ${Database.escape(GovermentEmail)})`
         )
         const EmailAuthID = Security.CreateSessionID()
-        Database.query(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES (${QueryValues.join(",")});
-        INSERT INTO infectedpersons(EmailAuthID, GovermentID) VALUES('${EmailAuthID}', ${Database.escape(GovermentID)})`, (err, rows, fields) => { //확진자 등록 및 이메일 등록
+        Database.query(`INSERT INTO infectedpersons(PersonUUID, GovermentID, PhoneLastNumber, GovermentEMAIL) VALUES ${QueryValues.join(",")};`,
+        (err, rows, fields) => { //확진자 등록
+            console.log("오류 : " + err?.message + "\n" + err?.code + "\n" + err?.sqlMessage + "\n" + err?.sql) //SQL 디버그(작동 확인후 이 주석은 지우기)
             if(!err){
-                onFinish(TaskCode.SUCCESS_WORK, EmailAuthID)
+                Database.query(`INSERT INTO authinfect(EmailAuthID, GovermentID) VALUES('${EmailAuthID}', ${Database.escape(GovermentID)});`,
+                (err, rows, fields) => { //이메일 링크 등록
+                    console.log("오류 : " + err?.message + "\n" + err?.code + "\n" + err?.sqlMessage + "\n" + err?.sql) //SQL 디버그(작동 확인후 이 주석은 지우기)
+                    if(!err){
+                        onFinish(TaskCode.SUCCESS_WORK, EmailAuthID)
+                    }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "")}
+                })
             }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "")}
         })
     }
