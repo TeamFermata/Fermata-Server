@@ -42,6 +42,11 @@ function main(CloudArgs:any){
     const headers =CloudArgs.__ow_headers;
     delete CloudArgs.__ow_headers;
 
+    //디버그
+    process.on("uncaughtException", (err) => {
+        console.log("오류 발생 :\n" + err + "")
+    })
+
     console.log(CloudArgs);
  
     if(Database==null) {
