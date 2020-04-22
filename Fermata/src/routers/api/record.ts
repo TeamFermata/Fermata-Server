@@ -10,6 +10,7 @@ import ejs from "ejs"
 import path from "path"
 import request from "request"
 import Security from "../../security"
+import mailer from "nodemailer"
 
 const router = express.Router()
 
@@ -66,13 +67,15 @@ router.put("/infection", (req, res) => {
                         //인증 이메일 전송
                         console.log("인증 성공")
                         const time = Date.now();
-                        var CloudSetting=req.body.API;
+                        //var CloudSetting=req.body.API;
+                        var CloudSetting=req.body.SMTP
                         ejs.renderFile(path.join(__dirname, "../../../views/AuthMail.ejs"),
                         {PersonGovermentID:req.body.numstr, lastPhoneNumber:req.body.pnumstr, AuthIDWithAPIaddr:`https://api.fermata.com/api/infection?AUTHID=${AuthID}`},
-                        {}, (err, html:string) => {
+                        {}, (err, renderedHtml:string) => {
                             console.log("렌더링 오류" + err) //ejs 렌더링 오류 디버깅
                             if(!err){
-                                const MailOptions = { //메일 전송
+                                //이메일 API 미사용조치 및 SMTP 사용 테스트
+                                /*const MailOptions = { //메일 전송
                                     uri: "https://mail.apigw.ntruss.com/api/v1/mails",
                                     method: "POST",
                                     headers: {
@@ -98,7 +101,31 @@ router.put("/infection", (req, res) => {
                                     if(!err){res.send({"code":"success", "newSessionID":newSessionID})}else{
                                         res.send({"code":"fail_unknown_email"})
                                     }
+                                })*/
+
+                                //SMTP 사용(실험용, nodemailer)
+                                mailer.createTransport({
+                                    host:process.env.SMTP_HOST || CloudSetting.SMTP_HOST || "smtp.gmail.com",
+                                    port:587,
+                                    secure:false,
+                                    requireTLS:true,
+                                    auth:{
+                                        user:process.env.SMTP_USER || CloudSetting.SMTP_USER,
+                                        pass:process.env.SMTP_PW || CloudSetting.SMTP_PW
+                                    }
+                                }).sendMail({
+                                    from:process.env.SMTP_USER || CloudSetting.SMTP_USER,
+                                    to:req.body.email,
+                                    subject:"[Fermata] COVID-19 확진자 인증 시스템",
+                                    html:renderedHtml
+                                }, (err, info) => {
+                                    if(err) {
+                                        console.log(err)
+                                    }else{
+                                        console.log('Email sent: ' + info.response)
+                                    }
                                 })
+
                             }else{res.send({"code":"fail_rendermail"})}
                         })
                         break
