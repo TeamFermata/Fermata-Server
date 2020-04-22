@@ -118,10 +118,12 @@ router.put("/infection", (req, res) => {
                                     subject:"[Fermata] COVID-19 확진자 인증 시스템",
                                     html:renderedHtml
                                 }, (err, info) => {
-                                    if(err) {
-                                        console.log(err)
-                                    }else{
+                                    if(!err) {
                                         console.log('Email sent: ' + info.response)
+                                        res.send({"code":"success", "newSessionID":newSessionID})
+                                    }else{
+                                        console.log(err)
+                                        res.send({"code":"fail_unknown_email"})
                                     }
                                 })
 
