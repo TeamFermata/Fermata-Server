@@ -106,9 +106,8 @@ router.put("/infection", (req, res) => {
                                 //SMTP 사용(실험용, nodemailer)
                                 mailer.createTransport({
                                     host:process.env.SMTP_HOST || CloudSetting.SMTP_HOST || "smtp.gmail.com",
-                                    port:587,
-                                    secure:false,
-                                    requireTLS:true,
+                                    port:465,
+                                    secure:true,
                                     auth:{
                                         user:process.env.SMTP_USER || CloudSetting.SMTP_USER,
                                         pass:process.env.SMTP_PW || CloudSetting.SMTP_PW
