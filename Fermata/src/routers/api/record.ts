@@ -114,7 +114,15 @@ router.put("/infection", (req, res) => {
 //확진자 인증(for email)
 router.get("/infection", (req, res) => {
     dbFunctions.AuthInfection(req.params.AUTHID, (code:TaskCode) => {
-        
+        res.set("Content-Type", "text/html")
+        switch(code){
+            case TaskCode.SUCCESS_WORK :
+                res.send("<script>alert('작업이 처리되었습니다');self.close();</script>")
+                break
+            default :
+                res.send("<script>alert('오류 발생, 관리자에게 문의하세요');self.close();</script>")
+                break
+        }
     })
 })
 
