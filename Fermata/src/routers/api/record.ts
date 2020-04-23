@@ -8,8 +8,6 @@ import {dbFunctions, TaskCode} from "./../../dbFunctions"
 import express from "express"
 import ejs from "ejs"
 import path from "path"
-import request from "request"
-import Security from "../../security"
 import mailer from "nodemailer"
 
 const router = express.Router()
@@ -67,42 +65,12 @@ router.put("/infection", (req, res) => {
                         //인증 이메일 전송
                         console.log("인증 성공")
                         const time = Date.now();
-                        //var CloudSetting=req.body.API;
                         var CloudSetting=req.body.SMTP
                         ejs.renderFile(path.join(__dirname, "../../../views/AuthMail.ejs"),
                         {PersonGovermentID:req.body.numstr, lastPhoneNumber:req.body.pnumstr, AuthIDWithAPIaddr:`https://api.fermata.com/api/infection?AUTHID=${AuthID}`},
                         {}, (err, renderedHtml:string) => {
                             console.log("렌더링 오류" + err) //ejs 렌더링 오류 디버깅
                             if(!err){
-                                //이메일 API 미사용조치 및 SMTP 사용 테스트
-                                /*const MailOptions = { //메일 전송
-                                    uri: "https://mail.apigw.ntruss.com/api/v1/mails",
-                                    method: "POST",
-                                    headers: {
-                                       "x-ncp-apigw-timestamp":`${time}`,
-                                       "x-ncp-iam-access-key":`${process.env.NAVER_API_ACCESS_KEY || CloudSetting.ACCESSKEY}`,
-                                       "x-ncp-apigw-signature-v2":`${Security.makeSignatureV2(time, process.env.NAVER_API_ACCESS_KEY || CloudSetting.ACCESSKEY,
-                                        process.env.NAVER_API_SECRET_KEY || CloudSetting.SECRETKEY)}`,
-                                       "x-ncp-lang":"en-US"
-                                    },
-                                    body:{
-                                        "senderAddress":"noreply@fermata.site",
-                                        "title":"[Fermata] COVID-19 확진자 확인 시스템",
-                                        "body":html,
-                                        "recipients":[
-                                            {"address":req.body.email, "name":"대한민국 정부 COVID-19 방역담당자", "type":"R"}
-                                        ]
-                                    },
-                                    json:true
-                                }
-                                request.post(MailOptions, (err, httpResponse, body) => {
-                                    console.log(httpResponse.statusCode)
-                                    console.log(httpResponse.body)
-                                    if(!err){res.send({"code":"success", "newSessionID":newSessionID})}else{
-                                        res.send({"code":"fail_unknown_email"})
-                                    }
-                                })*/
-
                                 //SMTP 사용(실험용, nodemailer)
                                 mailer.createTransport({
                                     host:process.env.SMTP_HOST || CloudSetting.SMTP_HOST || "smtp.gmail.com",
@@ -126,7 +94,6 @@ router.put("/infection", (req, res) => {
                                         res.send({"code":"fail_unknown_email"})
                                     }
                                 })
-
                             }else{res.send({"code":"fail_rendermail"})}
                         })
                         break
