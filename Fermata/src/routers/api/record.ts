@@ -81,9 +81,9 @@ router.put("/infection", (req, res) => {
                                         pass:process.env.SMTP_PW || CloudSetting.SMTP_PW
                                     }
                                 }).sendMail({
-                                    from:process.env.SMTP_USER || CloudSetting.SMTP_USER,
+                                    from:{name:"팀 페르마타", address:process.env.SMTP_USER || CloudSetting.SMTP_USER},
                                     to:req.body.email,
-                                    subject:"[Fermata] COVID-19 확진자 인증 시스템",
+                                    subject:"COVID-19 확진자를 확인해주세요",
                                     html:renderedHtml
                                 }, (err, info) => {
                                     if(!err) {
