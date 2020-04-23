@@ -20,7 +20,7 @@ class Security{
 
     //16자리 세션 ID 생성
     static CreateSessionID():string{
-        const Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-" //SessionID source string
+        const Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" //SessionID source string
         var ResultSessionID:string = ""
         for(let index=0;index < 16;index++){
             ResultSessionID += Chars[Math.round((new Date().valueOf() * Math.random())) % 63].toString()
