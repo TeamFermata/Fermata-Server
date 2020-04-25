@@ -10,6 +10,7 @@ import ejs from "ejs"
 import path from "path"
 import https from "https"
 import fs from "fs"
+import cors from "cors"
 
 //Initialize Settings
 const Database = mysql.createConnection({
@@ -24,6 +25,7 @@ Database.connect()
 const App = express()
 App.use(express.static(path.join(__dirname, '../static')))
 App.use(express.json())
+App.use(cors())
 App.use(express.urlencoded({extended:false}))
 App.set('views', path.join(__dirname, '../views')) // html 동적 파일 위치
 App.set('view engine', 'ejs')
