@@ -125,13 +125,15 @@ class dbFunctions{
     //확진자 인증
     static AuthInfection(AuthID:string, onFinish:(code:TaskCode) => any){
         Database.query(`SELECT * FROM authinfect WHERE EmailAuthID=${Database.escape(AuthID)}`, (err, rows, fields) => { //인증 ID로 확진자들 ID 가져오기
-            if(!err){ //오류가 없다면
+            console.log(rows)
+            if(!err && rows.length > 0){ //오류가 없다면
                 Database.query(`UPDATE infectedpersons SET Authed=1 WHERE GovermentID='${rows[0].GovermentID}'`, (err, rows, fields) => { //확진자들 ID와 일치하는 확진자는 모두 인증 처리
                     if(!err){
                         onFinish(TaskCode.SUCCESS_WORK)
                     }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN)}
                 })
             }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN)}
+            console.log(err)
         })
     }
 
