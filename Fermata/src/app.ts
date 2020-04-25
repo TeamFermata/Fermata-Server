@@ -8,6 +8,7 @@ import mysql from "mysql"
 
 //import * as serverless from "serverless-http";
 import express from "express"
+import cors from "cors"
 
 import path from "path"
 import ejs from "ejs"
@@ -22,6 +23,7 @@ import response from "./response"
 const App = express()
 App.use(express.static(path.join(__dirname, '../static')))
 App.use(express.json())
+App.use(cors())
 App.use(express.urlencoded({extended:false}))
 App.set('views', path.join(__dirname, '../views')) // html 동적 파일 위치
 App.set('view engine', 'ejs')
@@ -59,6 +61,7 @@ function main(CloudArgs:any){
     return new Promise((s,j)=>{
         var req ;
         if(CloudArgs.path) CloudArgs.path=CloudArgs.path.replace("\\",""); 
+
         if(CloudArgs.path == "user"){
 
             req = new request({
@@ -103,8 +106,7 @@ function main(CloudArgs:any){
                 
                 
             }), () => { });
-        } else if(CloudArgs.path=="records/infection"){
-
+        } else if(CloudArgs.path=="records/infection"){ //only PUT
             req= new request({
                 method: method,
                 headers: headers,
@@ -121,12 +123,29 @@ function main(CloudArgs:any){
                 }
                 
             }), () => { });
+        } else if(CloudArgs.__ow_method == "get" && CloudArgs.__ow_path == "/api/infection"){ //only GET(확진자 인증)
+            req= new request({
+                method: "get",
+                headers: headers,
+                body: CloudArgs,
             
+                remoteAddress: remoteAddress,
+                url: "/infection?AUTHID=" + CloudArgs.AUTHID,
+            });
+            API_RECORD(req, new response((result:any) => {
+                if(true||result.code=="success"){
+                    s(result);
+                } else {
+                    j(result.code)
+                }
+                
+            }), () => { });
         }
-        
         else {   
             s({});
         }
+
+        console.log(typeof CloudArgs.__ow_path + " / " + typeof CloudArgs.__ow_method)
     })
 }
 
