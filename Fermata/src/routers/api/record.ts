@@ -113,7 +113,8 @@ router.put("/infection", (req, res) => {
 
 //확진자 인증(for email)
 router.get("/infection", (req, res) => {
-    dbFunctions.AuthInfection(req.params.AUTHID, (code:TaskCode) => {
+    console.log(req.body.AUTHID || req.query.AUTHID)
+    dbFunctions.AuthInfection(req.body.AUTHID || req.query.AUTHID, (code:TaskCode) => {
         console.log("확진자 인증 코드는 " + code + "입니다")
         switch(code){
             case TaskCode.SUCCESS_WORK :
