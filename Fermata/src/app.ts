@@ -46,7 +46,7 @@ function main(CloudArgs:any){
 
     //디버그
     process.on("uncaughtException", (err) => {
-        console.log("오류 발생 :\n" + err + "")
+        console.log("오류 발생 :\n" + err + "\n" + err.stack)
     })
 
     console.log(CloudArgs);
@@ -123,7 +123,7 @@ function main(CloudArgs:any){
                 }
                 
             }), () => { });
-        } else if(CloudArgs.__ow_method == "get" && CloudArgs.__ow_path == "/api/infection"){ //only GET(확진자 인증)
+        } else if(typeof CloudArgs.__ow_method == "string" && typeof CloudArgs.__ow_path == "string" && CloudArgs.__ow_method == "get" && CloudArgs.__ow_path == "/api/infection"){ //only GET(확진자 인증)
             req= new request({
                 method: "get",
                 headers: headers,

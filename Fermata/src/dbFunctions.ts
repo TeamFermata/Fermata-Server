@@ -23,6 +23,7 @@ class dbFunctions{
                     if(!err){ //오류가 없다면
                         onFinish(TaskCode.SUCCESS_WORK) //작업 완료
                     }else{ //오류 발생 시
+                        console.log(err)
                         onFinish(TaskCode.ERR_DATABASE_UNKNOWN) //알 수 없는 오류
                     }
                 })
@@ -34,11 +35,13 @@ class dbFunctions{
     static Signin(ID:string, Password:string, onFinish:(code:TaskCode, newSessionID:string) => any){
         Database.query(`SELECT * FROM authusers WHERE ID=${Database.escape(ID)};`, (err, rows, fields) => {
             if(!err && rows.length == 1){
+                console.log(err)
                 var FoundUser = rows[0]
                 var LoginResult:boolean = (FoundUser.HashedPassword == Security.EncryptPassword(Password, FoundUser.Salt))
                 if(LoginResult){ //로그인 성공 시
                     var SessionID:string = Security.CreateSessionID()
                     Database.query(`UPDATE authusers SET SessionID='${SessionID}' WHERE ID=${Database.escape(ID)};`, (err, rows, fields) => {
+                        console.log(err)
                         if(!err){ //새로운 세션 ID 발급 시
                             onFinish(TaskCode.SUCCESS_WORK, SessionID)
                         }
@@ -69,13 +72,12 @@ class dbFunctions{
 
     //접촉 기록 추가
     static InsertRecord(myStaticID:string, records:Array<string>, onFinish:(code:TaskCode) => any){
-        var QueryValues:string = ""
-        records.forEach((it) => { 
-            //베타테스트 버전이므로 Authed 필드에 1(true)를 넣어 자동인증 되도록 함(실제 출시 후 반드시 지울 것!)
-            QueryValues = QueryValues + `(${Database.escape(myStaticID)}, ${Database.escape(it)}, '${momentJS(new Date()).tz("Asia/Seoul").format("YYYY-MM-DD")}', 1),` //KST TIMEZONE
-        })
-        QueryValues = QueryValues.slice(0, -1) + ";" //마지막 ,를 ;로 변경
-        Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime, Authed) VALUES ${QueryValues}`, (err, rows, fields) => {
+        var QueryValues:string[] = records.map((it) => 
+        `(${Database.escape(myStaticID)}, ${Database.escape(it)}, ${Database.escape(momentJS(new Date()).tz("Asia/Seoul").format("YYYY-MM-DD"))})` //KST TIMEZONE
+        )
+        //console.log("디버그" + `INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime, Authed) VALUES ${QueryValues.join(",")};` + "ㅇ그리고ㅇ" + "INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime, Authed) VALUES " + QueryValues.join(",") + ";")
+        Database.query(`INSERT INTO scanchains(ScannerStaticID, ScanedDynamicUUID, ContactDayWithoutTime) VALUES ${QueryValues.join(",")};`, (err, rows, fields) => {
+            console.log(err)
             if(!err){
                 onFinish(TaskCode.SUCCESS_WORK) //INSERT 성공
             }else{onFinish(TaskCode.ERR_DATABASE_UNKNOWN)} //INSERT 중 오류 발생 시
