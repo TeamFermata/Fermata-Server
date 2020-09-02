@@ -20,7 +20,7 @@ import API_RECORD from "./routers/api/record"
 App.use('/api/user', API_USER)
 App.use('/api/record', API_RECORD)
 App.get("/", (req, res) => { //안내화면
-    res.send("<h1>Fermata API Server</h1><br><p>DEVELOPED BY CRUSHU</p>")
+    res.send("<h1>Fermata API Server</h1><br><p>DEVELOPED BY V!NT0</p>")
 })
 
 //Start Server
