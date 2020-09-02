@@ -6,7 +6,7 @@
   "scripts": {
     "build-ts": "tsc",
     "build-fn": "tsc --project tsconfig.fn.json",
-    "start": "tsc && node ./dist/local.js",
+    "start": "tsc && node ./dist/Server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "TracetogetherKorea",
