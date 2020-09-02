@@ -28,7 +28,7 @@ class dbFunctions {
                             console.log(err)
                             onFinish(TaskCode.ERR_DATABASE_UNKNOWN) //알 수 없는 오류
                         }
-                        Database.end()
+                        
                     })
                 } else { onFinish(TaskCode.ERR_SIGNUP_EXISTS_ACCOUNT) } //일치하는 ID가 이미 있다면
             })
@@ -50,7 +50,7 @@ class dbFunctions {
                             console.log(err)
                             if (!err) { //새로운 세션 ID 발급 시
                                 onFinish(TaskCode.SUCCESS_WORK, SessionID)
-                                Database.end()
+                                
                                 return
                             }
                         })
@@ -60,7 +60,7 @@ class dbFunctions {
                     else { onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "") } //알 수 없는 오류
                 } else if ((rows as any).length > 1) { onFinish(TaskCode.ERR_SIGNIN_NOT_FOUND, "") } //일치하는 계정이 없음
                 else { onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "") } //알수없는 오류
-                Database.end()
+                
             })
         })
     }
@@ -76,12 +76,12 @@ class dbFunctions {
                         if (!err) { //새로운 세션 ID 발급 시
                             onFinish(TaskCode.SUCCESS_WORK, CreatedSessionID)
                         } else { onFinish(TaskCode.ERR_SESSION_REGEN_FAILED, "") }
-                        Database.end()
+                        
                         return
                     })
                 } else if ((rows as any).length == 0 || (rows as any).length > 1) { onFinish(TaskCode.ERR_SESSION_AUTH_FAILED, "") } //일치하는 계정을 찾을 수 없음
                 else { onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "") } //DB 오류가 있다면
-                Database.end()
+                
             })
         })
     }
@@ -99,7 +99,7 @@ class dbFunctions {
                 if (!err) {
                     onFinish(TaskCode.SUCCESS_WORK) //INSERT 성공
                 } else { onFinish(TaskCode.ERR_DATABASE_UNKNOWN) } //INSERT 중 오류 발생 시
-                Database.end()
+                
             })
         })
     }
@@ -119,10 +119,10 @@ class dbFunctions {
                                 var contactedDate: Array<string> = (rows as any).map((it: any) => { return it.ContactDayWithoutTime })
                                 onFinish(TaskCode.SUCCESS_WORK, contactedUUID, contactedDate) //값 반환
                             } else { onFinish(TaskCode.ERR_DATABASE_UNKNOWN, [], []) }
-                            Database.end()
+                            
                         })
                     }
-                } else { onFinish(TaskCode.ERR_DATABASE_UNKNOWN, [], []); Database.end() }
+                } else { onFinish(TaskCode.ERR_DATABASE_UNKNOWN, [], []);  }
             })
         })
     }
@@ -145,9 +145,9 @@ class dbFunctions {
                                 if (!err) {
                                     onFinish(TaskCode.SUCCESS_WORK, EmailAuthID)
                                 } else { onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "") }
-                                Database.end()
+                                
                             })
-                    } else { onFinish(TaskCode.ERR_DATABASE_UNKNOWN, "");Database.end() }
+                    } else { onFinish(TaskCode.ERR_DATABASE_UNKNOWN, ""); }
                 })
         })
     }
