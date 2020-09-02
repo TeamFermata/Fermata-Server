@@ -67,7 +67,7 @@ router.put("/infection", (req, res) => {
                         const time = Date.now();
                         var CloudSetting=req.body.SMTP
                         ejs.renderFile(path.join(__dirname, "../../../views/AuthMail.ejs"),
-                        {PersonGovermentID:req.body.numstr, lastPhoneNumber:req.body.pnumstr, AuthIDWithAPIaddr:`https://fermataserver.herokuapp.com/api/infection?AUTHID=${AuthID}`},
+                        {PersonGovermentID:req.body.numstr, lastPhoneNumber:req.body.pnumstr, AuthIDWithAPIaddr:`https://fermataserver.herokuapp.com/api/record/infection?AUTHID=${AuthID}`},
                         {}, (err, renderedHtml:string) => {
                             console.log("렌더링 오류" + err) //ejs 렌더링 오류 디버깅
                             if(!err){
