@@ -4,7 +4,7 @@
 */
 
 //Import Modules
-import {dbFunctions, TaskCode} from "./../../dbFunctions"
+import {dbFunctions, TaskCode} from "../../Database"
 import express from "express"
 import ejs from "ejs"
 import path from "path"
